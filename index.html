@@ -10,13 +10,16 @@ function Car(name){
 	this.stop = function(){
 		//make the car console log a message to indicate it is stopping
         this.currentState = "stopped";
-		console.log(this.name + " is stopping");
+		console.log(this.name + " is stopped");
 	};
 	this.drive = function(){
 		//make the car console log a message to indicate it is moving
         this.currentState = "driving";
-        console.log(this.name + " is moving");
-	}
+        console.log(this.name + " is driving");
+	};
+	this.status = function(){
+	    console.log(this.name+" is "+this.currentState);
+    }
 }
 
 function TrafficLight(){
