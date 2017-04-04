@@ -4,19 +4,19 @@
 	<title></title>
 	<script>
 
-function Car(name){
+function Car(name, direction){
 	this.name = name;//name of the car for ease of determination of objects
-	this.currentState = null; //the current state of the car, ie stopped or started
-	this.direction; //the current direction of the car's travel
+	this.currentState = 'driving'; //the current state of the car, ie stopped or started
+	this.direction = direction; //the current direction of the car's travel
 	this.stop = function(){
 		//make the car console log a message to indicate it is stopping
         this.currentState = "stopped";
-		console.log(this.name + " is stopped");
+        this.status();
 	};
 	this.drive = function(){
 		//make the car console log a message to indicate it is moving
         this.currentState = "driving";
-        console.log(this.name + " is driving");
+        this.status();
 	};
 	this.status = function(){
 	    console.log(this.name+" is "+this.currentState);
@@ -28,38 +28,67 @@ function TrafficLight(){
         'e/w': [],
         'n/s': []
     };
+    this.trafficFlow = "e/w";
+    this.ew = new Proxy(this.cars['e/w'], {
+        get: function(array,index){
+            return array[index].name+' is '+array[index].currentState+' '+array[index].direction;
+        }
+    });
+    this.ns = new Proxy(this.cars['n/s'], {
+        get: function(array, index){
+            return array[index].name+' is '+array[index].currentState+' '+array[index].direction;
+        }
+    });
     this.addCar = function(name){
         //add a car to the list of cars that will be made
         //probably should make the cars here too
-        var car = new Car(name);
-        this.cars.push(car);
-        console.log("New driver on the road: " +car.name);
+        var car = new Car(name,this.getDirection());
+        this.cars[this.getDirection()].push(car);
+        console.log(car.name+" is entering the "+this.getDirection()+" road");
     };
-	this.turnRed = function(){
+	this.turnRed = function(direction){
 		//make all the cars stop
-		for (var i = 0; i < this.cars.length; i++){
-		    this.cars[i].stop();
+        console.log(direction+" light is now red");
+		for (var i = 0; i < this.cars[direction].length; i++){
+		    this.cars[direction][i].stop();
 		}
 	};
-	this.turnGreen = function() {
+	this.turnGreen = function(direction) {
         //make all the cars start
-        for (var i = 0; i < this.cars.length; i++) {
-            this.cars[i].drive();
+        console.log(direction+" light is now green");
+        for (var i = 0; i < this.cars[direction].length; i++) {
+            this.cars[direction][i].drive();
         }
     };
 	this.toggleDirection = function(){
-		//change the direction of traffic flow.
-		//for example, if direction is e/w, make direction n/s
-		//then adjust cars' movement based upon their direction
-	}
+        //change the direction of traffic flow.
+        //for example, if direction is e/w, make direction n/s
+        //then adjust cars' movement based upon their direction
+	    if (this.getDirection() === "e/w"){
+            this.turnRed(this.getDirection());
+            this.trafficFlow = 'n/s';
+	        this.turnGreen(this.getDirection());
+        } else { //.trafficFlow === 'n/s'
+            this.turnRed(this.getDirection());
+            this.trafficFlow = 'e/w';
+            this.turnGreen(this.getDirection());
+        }
+	};
+    this.getDirection = () => (
+        this.trafficFlow
+    );
 }
 var bake = new TrafficLight();
 bake.addCar('Josh');
 bake.addCar('Sean');
+bake.toggleDirection(); //now ns
 bake.addCar('Erik');
 bake.addCar('Miranda');
+bake.toggleDirection(); //now ew
 bake.addCar('Kevin');
+bake.toggleDirection(); //now ns
 bake.addCar('Chalmers');
+bake.toggleDirection(); //now ew
 bake.addCar('Andres');
 bake.addCar('Donald');
 
