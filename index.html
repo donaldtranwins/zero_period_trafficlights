@@ -6,12 +6,15 @@
 
 function Car(name){
 	this.name = name;//name of the car for ease of determination of objects
+	this.currentState = null; //the current state of the car, ie stopped or started
 	this.stop = function(){
 		//make the car console log a message to indicate it is stopping
+        this.currentState = "stopped";
 		console.log(this.name + " is stopping");
 	};
 	this.drive = function(){
 		//make the car console log a message to indicate it is moving
+        this.currentState = "driving";
         console.log(this.name + " is moving");
 	}
 }
